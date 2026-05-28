@@ -11,7 +11,7 @@ class RocketChatChannelsApi {
   /// Corresponds to `GET /api/v1/channels.list`
   Future<List<ChannelRoom>> list({int? offset, int? count}) async {
     try {
-      final response = await _dio.get(
+      final response = await _dio.get<Map<String, dynamic>>(
         'api/v1/channels.list',
         queryParameters: {
           if (offset != null) 'offset': offset,
@@ -19,14 +19,15 @@ class RocketChatChannelsApi {
         },
       );
 
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final List<dynamic> channelsList = response.data['channels'] ?? [];
+      final dataMap = response.data;
+      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
+        final channelsList = (dataMap['channels'] as List<dynamic>?) ?? [];
         return channelsList
             .map((json) => ChannelRoom.fromJson(json as Map<String, dynamic>))
             .toList();
       } else {
         throw Exception(
-          'Failed to load channels: ${response.data['error'] ?? 'Unknown error'}',
+          'Failed to load channels: ${dataMap?['error'] ?? 'Unknown error'}',
         );
       }
     } on DioException catch (e) {
@@ -41,7 +42,7 @@ class RocketChatChannelsApi {
     bool readOnly = false,
   }) async {
     try {
-      final response = await _dio.post(
+      final response = await _dio.post<Map<String, dynamic>>(
         'api/v1/channels.create',
         data: {
           'name': name,
@@ -49,11 +50,12 @@ class RocketChatChannelsApi {
         },
       );
 
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        return ChannelRoom.fromJson(response.data['channel'] as Map<String, dynamic>);
+      final dataMap = response.data;
+      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
+        return ChannelRoom.fromJson(dataMap['channel'] as Map<String, dynamic>);
       } else {
         throw Exception(
-          'Failed to create channel: ${response.data['error'] ?? 'Unknown error'}',
+          'Failed to create channel: ${dataMap?['error'] ?? 'Unknown error'}',
         );
       }
     } on DioException catch (e) {
@@ -65,18 +67,19 @@ class RocketChatChannelsApi {
   /// Corresponds to `POST /api/v1/channels.join`
   Future<bool> join({required String roomId}) async {
     try {
-      final response = await _dio.post(
+      final response = await _dio.post<Map<String, dynamic>>(
         'api/v1/channels.join',
         data: {
           'roomId': roomId,
         },
       );
 
-      if (response.statusCode == 200 && response.data['success'] == true) {
+      final dataMap = response.data;
+      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
         return true;
       } else {
         throw Exception(
-          'Failed to join channel: ${response.data['error'] ?? 'Unknown error'}',
+          'Failed to join channel: ${dataMap?['error'] ?? 'Unknown error'}',
         );
       }
     } on DioException catch (e) {
@@ -88,18 +91,19 @@ class RocketChatChannelsApi {
   /// Corresponds to `POST /api/v1/channels.leave`
   Future<bool> leave({required String roomId}) async {
     try {
-      final response = await _dio.post(
+      final response = await _dio.post<Map<String, dynamic>>(
         'api/v1/channels.leave',
         data: {
           'roomId': roomId,
         },
       );
 
-      if (response.statusCode == 200 && response.data['success'] == true) {
+      final dataMap = response.data;
+      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
         return true;
       } else {
         throw Exception(
-          'Failed to leave channel: ${response.data['error'] ?? 'Unknown error'}',
+          'Failed to leave channel: ${dataMap?['error'] ?? 'Unknown error'}',
         );
       }
     } on DioException catch (e) {
@@ -115,7 +119,7 @@ class RocketChatChannelsApi {
     int? count,
   }) async {
     try {
-      final response = await _dio.get(
+      final response = await _dio.get<Map<String, dynamic>>(
         'api/v1/channels.history',
         queryParameters: {
           'roomId': roomId,
@@ -124,14 +128,15 @@ class RocketChatChannelsApi {
         },
       );
 
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final List<dynamic> msgList = response.data['messages'] ?? [];
+      final dataMap = response.data;
+      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
+        final msgList = (dataMap['messages'] as List<dynamic>?) ?? [];
         return msgList
             .map((json) => RocketChatMessage.fromJson(json as Map<String, dynamic>))
             .toList();
       } else {
         throw Exception(
-          'Failed to load channel history: ${response.data['error'] ?? 'Unknown error'}',
+          'Failed to load channel history: ${dataMap?['error'] ?? 'Unknown error'}',
         );
       }
     } on DioException catch (e) {
@@ -143,18 +148,19 @@ class RocketChatChannelsApi {
   /// Corresponds to `GET /api/v1/channels.info`
   Future<ChannelRoom> info({required String roomId}) async {
     try {
-      final response = await _dio.get(
+      final response = await _dio.get<Map<String, dynamic>>(
         'api/v1/channels.info',
         queryParameters: {
           'roomId': roomId,
         },
       );
 
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        return ChannelRoom.fromJson(response.data['channel'] as Map<String, dynamic>);
+      final dataMap = response.data;
+      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
+        return ChannelRoom.fromJson(dataMap['channel'] as Map<String, dynamic>);
       } else {
         throw Exception(
-          'Failed to load channel info: ${response.data['error'] ?? 'Unknown error'}',
+          'Failed to load channel info: ${dataMap?['error'] ?? 'Unknown error'}',
         );
       }
     } on DioException catch (e) {

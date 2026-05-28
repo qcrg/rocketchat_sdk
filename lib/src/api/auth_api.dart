@@ -4,7 +4,7 @@ import 'package:rocketchat_sdk/src/models/user/user.dart';
 
 class RocketChatAuthApi {
   final Dio _dio;
-  final Function(String token, String userId) _onLoginSuccess;
+  final void Function(String token, String userId) _onLoginSuccess;
 
   RocketChatAuthApi(this._dio, this._onLoginSuccess);
 
@@ -15,7 +15,7 @@ class RocketChatAuthApi {
     required String password,
   }) async {
     try {
-      final response = await _dio.post(
+      final response = await _dio.post<Map<String, dynamic>>(
         'api/v1/login',
         data: {
           'user': username,
@@ -23,8 +23,9 @@ class RocketChatAuthApi {
         },
       );
 
-      if (response.statusCode == 200 && response.data['status'] == 'success') {
-        final data = response.data['data'];
+      final dataMap = response.data;
+      if (response.statusCode == 200 && dataMap != null && dataMap['status'] == 'success') {
+        final data = dataMap['data'] as Map<String, dynamic>;
         final loginData = RocketChatLoginData(
           authToken: data['authToken'] as String? ?? '',
           userId: data['userId'] as String? ?? '',
@@ -36,7 +37,7 @@ class RocketChatAuthApi {
         return loginData;
       } else {
         throw Exception(
-          'Login failed: ${response.data['message'] ?? 'Unknown error'}',
+          'Login failed: ${dataMap?['message'] ?? 'Unknown error'}',
         );
       }
     } on DioException catch (e) {
@@ -48,8 +49,9 @@ class RocketChatAuthApi {
   /// Corresponds to `POST /api/v1/logout`
   Future<bool> logout() async {
     try {
-      final response = await _dio.post('api/v1/logout');
-      if (response.statusCode == 200 && response.data['status'] == 'success') {
+      final response = await _dio.post<Map<String, dynamic>>('api/v1/logout');
+      final dataMap = response.data;
+      if (response.statusCode == 200 && dataMap != null && dataMap['status'] == 'success') {
         return true;
       }
       return false;
@@ -62,12 +64,13 @@ class RocketChatAuthApi {
   /// Corresponds to `GET /api/v1/me`
   Future<RocketChatUser> me() async {
     try {
-      final response = await _dio.get('api/v1/me');
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        return RocketChatUser.fromJson(response.data as Map<String, dynamic>);
+      final response = await _dio.get<Map<String, dynamic>>('api/v1/me');
+      final dataMap = response.data;
+      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
+        return RocketChatUser.fromJson(dataMap);
       } else {
         throw Exception(
-          'Failed to get profile: ${response.data['error'] ?? 'Unknown error'}',
+          'Failed to get profile: ${dataMap?['error'] ?? 'Unknown error'}',
         );
       }
     } on DioException catch (e) {

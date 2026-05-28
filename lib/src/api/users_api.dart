@@ -10,7 +10,7 @@ class RocketChatUsersApi {
   /// Corresponds to `GET /api/v1/users.list`
   Future<List<RocketChatUser>> list({int? offset, int? count}) async {
     try {
-      final response = await _dio.get(
+      final response = await _dio.get<Map<String, dynamic>>(
         'api/v1/users.list',
         queryParameters: {
           if (offset != null) 'offset': offset,
@@ -18,14 +18,15 @@ class RocketChatUsersApi {
         },
       );
 
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final List<dynamic> usersList = response.data['users'] ?? [];
+      final dataMap = response.data;
+      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
+        final usersList = (dataMap['users'] as List<dynamic>?) ?? [];
         return usersList
             .map((json) => RocketChatUser.fromJson(json as Map<String, dynamic>))
             .toList();
       } else {
         throw Exception(
-          'Failed to load users: ${response.data['error'] ?? 'Unknown error'}',
+          'Failed to load users: ${dataMap?['error'] ?? 'Unknown error'}',
         );
       }
     } on DioException catch (e) {
@@ -37,18 +38,19 @@ class RocketChatUsersApi {
   /// Corresponds to `GET /api/v1/users.info`
   Future<RocketChatUser> info({required String userId}) async {
     try {
-      final response = await _dio.get(
+      final response = await _dio.get<Map<String, dynamic>>(
         'api/v1/users.info',
         queryParameters: {
           'userId': userId,
         },
       );
 
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        return RocketChatUser.fromJson(response.data['user'] as Map<String, dynamic>);
+      final dataMap = response.data;
+      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
+        return RocketChatUser.fromJson(dataMap['user'] as Map<String, dynamic>);
       } else {
         throw Exception(
-          'Failed to load user info: ${response.data['error'] ?? 'Unknown error'}',
+          'Failed to load user info: ${dataMap?['error'] ?? 'Unknown error'}',
         );
       }
     } on DioException catch (e) {
@@ -65,7 +67,7 @@ class RocketChatUsersApi {
     required String password,
   }) async {
     try {
-      final response = await _dio.post(
+      final response = await _dio.post<Map<String, dynamic>>(
         'api/v1/users.create',
         data: {
           'email': email,
@@ -75,11 +77,12 @@ class RocketChatUsersApi {
         },
       );
 
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        return RocketChatUser.fromJson(response.data['user'] as Map<String, dynamic>);
+      final dataMap = response.data;
+      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
+        return RocketChatUser.fromJson(dataMap['user'] as Map<String, dynamic>);
       } else {
         throw Exception(
-          'Failed to create user: ${response.data['error'] ?? 'Unknown error'}',
+          'Failed to create user: ${dataMap?['error'] ?? 'Unknown error'}',
         );
       }
     } on DioException catch (e) {
@@ -91,18 +94,19 @@ class RocketChatUsersApi {
   /// Corresponds to `POST /api/v1/users.delete`
   Future<bool> delete({required String userId}) async {
     try {
-      final response = await _dio.post(
+      final response = await _dio.post<Map<String, dynamic>>(
         'api/v1/users.delete',
         data: {
           'userId': userId,
         },
       );
 
-      if (response.statusCode == 200 && response.data['success'] == true) {
+      final dataMap = response.data;
+      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
         return true;
       } else {
         throw Exception(
-          'Failed to delete user: ${response.data['error'] ?? 'Unknown error'}',
+          'Failed to delete user: ${dataMap?['error'] ?? 'Unknown error'}',
         );
       }
     } on DioException catch (e) {

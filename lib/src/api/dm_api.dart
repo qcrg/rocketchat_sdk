@@ -11,7 +11,7 @@ class RocketChatDmApi {
   /// Corresponds to `GET /api/v1/dm.list`
   Future<List<DmRoom>> list({int? offset, int? count}) async {
     try {
-      final response = await _dio.get(
+      final response = await _dio.get<Map<String, dynamic>>(
         'api/v1/dm.list',
         queryParameters: {
           if (offset != null) 'offset': offset,
@@ -19,14 +19,15 @@ class RocketChatDmApi {
         },
       );
 
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final List<dynamic> imsList = response.data['ims'] ?? [];
+      final dataMap = response.data;
+      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
+        final imsList = (dataMap['ims'] as List<dynamic>?) ?? [];
         return imsList
             .map((json) => DmRoom.fromJson(json as Map<String, dynamic>))
             .toList();
       } else {
         throw Exception(
-          'Failed to load DM list: ${response.data['error'] ?? 'Unknown error'}',
+          'Failed to load DM list: ${dataMap?['error'] ?? 'Unknown error'}',
         );
       }
     } on DioException catch (e) {
@@ -42,7 +43,7 @@ class RocketChatDmApi {
     int? count,
   }) async {
     try {
-      final response = await _dio.get(
+      final response = await _dio.get<Map<String, dynamic>>(
         'api/v1/dm.messages',
         queryParameters: {
           'roomId': roomId,
@@ -51,14 +52,15 @@ class RocketChatDmApi {
         },
       );
 
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final List<dynamic> msgList = response.data['messages'] ?? [];
+      final dataMap = response.data;
+      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
+        final msgList = (dataMap['messages'] as List<dynamic>?) ?? [];
         return msgList
             .map((json) => RocketChatMessage.fromJson(json as Map<String, dynamic>))
             .toList();
       } else {
         throw Exception(
-          'Failed to load messages: ${response.data['error'] ?? 'Unknown error'}',
+          'Failed to load messages: ${dataMap?['error'] ?? 'Unknown error'}',
         );
       }
     } on DioException catch (e) {
