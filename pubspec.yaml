@@ -1,7 +1,7 @@
 name: rocketchat_sdk
-description: A starting point for Dart libraries or applications.
-version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+description: A highly modular, strictly-typed, and enterprise-grade Dart & Flutter SDK for integrating Rocket.Chat REST APIs.
+version: 0.1.0
+repository: https://github.com/merterkoc/rocketchat_sdk
 
 environment:
   sdk: ^3.11.5

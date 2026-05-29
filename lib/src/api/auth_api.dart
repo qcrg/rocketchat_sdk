@@ -24,7 +24,9 @@ class RocketChatAuthApi {
       );
 
       final dataMap = response.data;
-      if (response.statusCode == 200 && dataMap != null && dataMap['status'] == 'success') {
+      if (response.statusCode == 200 &&
+          dataMap != null &&
+          dataMap['status'] == 'success') {
         final data = dataMap['data'] as Map<String, dynamic>;
         final loginData = RocketChatLoginData(
           authToken: data['authToken'] as String? ?? '',
@@ -51,7 +53,9 @@ class RocketChatAuthApi {
     try {
       final response = await _dio.post<Map<String, dynamic>>('api/v1/logout');
       final dataMap = response.data;
-      if (response.statusCode == 200 && dataMap != null && dataMap['status'] == 'success') {
+      if (response.statusCode == 200 &&
+          dataMap != null &&
+          dataMap['status'] == 'success') {
         return true;
       }
       return false;
@@ -66,7 +70,9 @@ class RocketChatAuthApi {
     try {
       final response = await _dio.get<Map<String, dynamic>>('api/v1/me');
       final dataMap = response.data;
-      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
+      if (response.statusCode == 200 &&
+          dataMap != null &&
+          dataMap['success'] == true) {
         return RocketChatUser.fromJson(dataMap);
       } else {
         throw Exception(

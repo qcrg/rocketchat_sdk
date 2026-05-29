@@ -20,7 +20,9 @@ class RocketChatDmApi {
       );
 
       final dataMap = response.data;
-      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
+      if (response.statusCode == 200 &&
+          dataMap != null &&
+          dataMap['success'] == true) {
         final imsList = (dataMap['ims'] as List<dynamic>?) ?? [];
         return imsList
             .map((json) => DmRoom.fromJson(json as Map<String, dynamic>))
@@ -53,10 +55,15 @@ class RocketChatDmApi {
       );
 
       final dataMap = response.data;
-      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
+      if (response.statusCode == 200 &&
+          dataMap != null &&
+          dataMap['success'] == true) {
         final msgList = (dataMap['messages'] as List<dynamic>?) ?? [];
         return msgList
-            .map((json) => RocketChatMessage.fromJson(json as Map<String, dynamic>))
+            .map(
+              (json) =>
+                  RocketChatMessage.fromJson(json as Map<String, dynamic>),
+            )
             .toList();
       } else {
         throw Exception(

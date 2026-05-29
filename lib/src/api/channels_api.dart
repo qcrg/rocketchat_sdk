@@ -20,7 +20,9 @@ class RocketChatChannelsApi {
       );
 
       final dataMap = response.data;
-      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
+      if (response.statusCode == 200 &&
+          dataMap != null &&
+          dataMap['success'] == true) {
         final channelsList = (dataMap['channels'] as List<dynamic>?) ?? [];
         return channelsList
             .map((json) => ChannelRoom.fromJson(json as Map<String, dynamic>))
@@ -51,7 +53,9 @@ class RocketChatChannelsApi {
       );
 
       final dataMap = response.data;
-      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
+      if (response.statusCode == 200 &&
+          dataMap != null &&
+          dataMap['success'] == true) {
         return ChannelRoom.fromJson(dataMap['channel'] as Map<String, dynamic>);
       } else {
         throw Exception(
@@ -75,7 +79,9 @@ class RocketChatChannelsApi {
       );
 
       final dataMap = response.data;
-      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
+      if (response.statusCode == 200 &&
+          dataMap != null &&
+          dataMap['success'] == true) {
         return true;
       } else {
         throw Exception(
@@ -99,7 +105,9 @@ class RocketChatChannelsApi {
       );
 
       final dataMap = response.data;
-      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
+      if (response.statusCode == 200 &&
+          dataMap != null &&
+          dataMap['success'] == true) {
         return true;
       } else {
         throw Exception(
@@ -129,10 +137,15 @@ class RocketChatChannelsApi {
       );
 
       final dataMap = response.data;
-      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
+      if (response.statusCode == 200 &&
+          dataMap != null &&
+          dataMap['success'] == true) {
         final msgList = (dataMap['messages'] as List<dynamic>?) ?? [];
         return msgList
-            .map((json) => RocketChatMessage.fromJson(json as Map<String, dynamic>))
+            .map(
+              (json) =>
+                  RocketChatMessage.fromJson(json as Map<String, dynamic>),
+            )
             .toList();
       } else {
         throw Exception(
@@ -156,7 +169,9 @@ class RocketChatChannelsApi {
       );
 
       final dataMap = response.data;
-      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
+      if (response.statusCode == 200 &&
+          dataMap != null &&
+          dataMap['success'] == true) {
         return ChannelRoom.fromJson(dataMap['channel'] as Map<String, dynamic>);
       } else {
         throw Exception(

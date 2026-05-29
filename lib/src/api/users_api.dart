@@ -19,10 +19,14 @@ class RocketChatUsersApi {
       );
 
       final dataMap = response.data;
-      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
+      if (response.statusCode == 200 &&
+          dataMap != null &&
+          dataMap['success'] == true) {
         final usersList = (dataMap['users'] as List<dynamic>?) ?? [];
         return usersList
-            .map((json) => RocketChatUser.fromJson(json as Map<String, dynamic>))
+            .map(
+              (json) => RocketChatUser.fromJson(json as Map<String, dynamic>),
+            )
             .toList();
       } else {
         throw Exception(
@@ -46,7 +50,9 @@ class RocketChatUsersApi {
       );
 
       final dataMap = response.data;
-      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
+      if (response.statusCode == 200 &&
+          dataMap != null &&
+          dataMap['success'] == true) {
         return RocketChatUser.fromJson(dataMap['user'] as Map<String, dynamic>);
       } else {
         throw Exception(
@@ -78,7 +84,9 @@ class RocketChatUsersApi {
       );
 
       final dataMap = response.data;
-      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
+      if (response.statusCode == 200 &&
+          dataMap != null &&
+          dataMap['success'] == true) {
         return RocketChatUser.fromJson(dataMap['user'] as Map<String, dynamic>);
       } else {
         throw Exception(
@@ -102,7 +110,9 @@ class RocketChatUsersApi {
       );
 
       final dataMap = response.data;
-      if (response.statusCode == 200 && dataMap != null && dataMap['success'] == true) {
+      if (response.statusCode == 200 &&
+          dataMap != null &&
+          dataMap['success'] == true) {
         return true;
       } else {
         throw Exception(

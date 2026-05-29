@@ -27,9 +27,9 @@ class RocketChatClient {
     String? authToken,
     String? userId,
     Dio? dio,
-  })  : dio = dio ?? Dio(),
-        authToken = authToken ?? '',
-        userId = userId ?? '' {
+  }) : dio = dio ?? Dio(),
+       authToken = authToken ?? '',
+       userId = userId ?? '' {
     this.dio.options.baseUrl = baseUrl.endsWith('/') ? baseUrl : '$baseUrl/';
     _updateHeaders(this.authToken, this.userId);
 

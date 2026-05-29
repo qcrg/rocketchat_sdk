@@ -17,6 +17,5 @@ abstract class DmRoom with _$DmRoom {
     String? topic,
   }) = _DmRoom;
 
-  factory DmRoom.fromJson(Map<String, dynamic> json) =>
-      _$DmRoomFromJson(json);
+  factory DmRoom.fromJson(Map<String, dynamic> json) => _$DmRoomFromJson(json);
 }
