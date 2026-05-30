@@ -123,4 +123,61 @@ class RocketChatUsersApi {
       throw Exception('HTTP Error: ${e.message}');
     }
   }
+
+  /// Views a user's avatar URL by resolving all 3xx redirects to get the final image URL.
+  /// Substitutes 'localhost' or '127.0.0.1' with the client's baseUrl host/port.
+  ///
+  /// Corresponds to `GET /api/v1/users.getAvatar`
+  Future<String> getAvatar({
+    String? userId,
+  }) async {
+    try {
+      final base = _dio.options.baseUrl;
+      final separator = base.endsWith('/') ? '' : '/';
+      final queryParam = userId != null ? '?userId=$userId' : '';
+      var currentUrl = '$base${separator}api/v1/users.getAvatar$queryParam';
+
+      // Follow up to 5 redirects manually to resolve localhost/127.0.0.1 in intermediate and final URLs
+      for (var i = 0; i < 5; i++) {
+        final response = await _dio.get<void>(
+          currentUrl,
+          options: Options(
+            followRedirects: false,
+            validateStatus: (status) {
+              return status != null && status < 400; // Capture 2xx and 3xx
+            },
+          ),
+        );
+
+        var redirectUrl = response.headers.value('location') ?? '';
+        if (redirectUrl.isEmpty) {
+          // No more redirects, this is the final URL
+          break;
+        }
+
+        // Handle relative URL redirects
+        if (!redirectUrl.startsWith('http://') && !redirectUrl.startsWith('https://')) {
+          final separator = base.endsWith('/') || redirectUrl.startsWith('/') ? '' : '/';
+          redirectUrl = '$base$separator$redirectUrl';
+        } else {
+          // Handle absolute URL redirects: substitute localhost or 127.0.0.1 with client's actual baseUrl host/port
+          final redirectUri = Uri.parse(redirectUrl);
+          if (redirectUri.host == 'localhost' || redirectUri.host == '127.0.0.1') {
+            final clientUri = Uri.parse(base);
+            redirectUrl = redirectUri.replace(
+              scheme: clientUri.scheme,
+              host: clientUri.host,
+              port: clientUri.port,
+            ).toString();
+          }
+        }
+
+        currentUrl = redirectUrl;
+      }
+
+      return currentUrl;
+    } on DioException catch (e) {
+      throw Exception('HTTP Error: ${e.message}');
+    }
+  }
 }

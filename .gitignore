@@ -11,3 +11,4 @@ pubspec.lock
 
 **.freezed.dart
 **.g.dart
+.env

@@ -1,10 +1,12 @@
+// ignore_for_file: avoid_print, avoid_catches_without_on_clauses
 import 'package:rocketchat_sdk/rocketchat_sdk.dart';
 
 void main() async {
-  // 1. Initialize the Rocket.Chat client with your server's base URL.
+  // 1. Initialize the Rocket.Chat client with your server's base URL and built-in logging enabled.
   // You don't need authentication credentials at this stage.
   final client = RocketChatClient(
     baseUrl: 'https://chat.example.com',
+    enableLogging: true, // New in 0.2.0: Client logging support!
   );
 
   print('🚀 Rocket.Chat SDK Client initialized at: ${client.baseUrl}');
@@ -28,7 +30,20 @@ void main() async {
     final myself = await client.auth.me();
     print('✅ Profile loaded: ${myself.name} (@${myself.username})');
 
-    // 4. List all public channels in the workspace
+    // 4. Fetch the authenticated user's avatar URL (New in 0.2.0!)
+    print('\n🖼️ Fetching user avatar...');
+    final avatarUrl = await client.users.getAvatar(userId: myself.id);
+    print('✅ Avatar URL: $avatarUrl');
+
+    // 5. Fetch active room subscriptions (New in 0.2.0!)
+    print('\n📋 Fetching subscriptions...');
+    final subscriptions = await client.subscriptions.get();
+    print('✅ Subscriptions loaded: ${subscriptions.length} found.');
+    for (final sub in subscriptions.take(5)) {
+      print('   • Room ID: ${sub.rid}, Name: ${sub.name} (Type: ${sub.t})');
+    }
+
+    // 6. List all public channels in the workspace
     print('\n💬 Fetching public channels...');
     final channels = await client.channels.list(count: 10);
     print('✅ Channels list loaded:');
@@ -36,7 +51,7 @@ void main() async {
       print('   • #${room.name} (ID: ${room.id}, Messages: ${room.msgs})');
     }
 
-    // 5. List the user's active direct message (DM) rooms
+    // 7. List the user's active direct message (DM) rooms
     print('\n✉️ Fetching direct message rooms...');
     final dms = await client.dm.list(count: 10);
     print('✅ Direct message rooms loaded:');
@@ -46,7 +61,7 @@ void main() async {
 
     if (dms.isNotEmpty) {
       final activeRoom = dms.first;
-      // 6. Fetch the message history inside the first active DM room
+      // 8. Fetch the message history inside the first active DM room
       print('\n📝 Fetching messages inside DM room: ${activeRoom.id}...');
       final messages = await client.dm.messages(
         roomId: activeRoom.id,
@@ -57,9 +72,25 @@ void main() async {
       for (final message in messages.reversed) {
         print('   [${message.sender.username}]: ${message.msg}');
       }
+
+      // 9. Send a new direct message (New in 0.2.0!)
+      print('\n📤 Sending a new message to DM room: ${activeRoom.id}...');
+      final sentMessage = await client.dm.sendMessage(
+        roomId: activeRoom.id,
+        text: 'Hello from Rocket.Chat Dart SDK v0.2.0! 🚀',
+      );
+      print('✅ Message sent successfully! Msg ID: ${sentMessage.id}');
+      print('   Content: "${sentMessage.msg}" at ${sentMessage.ts}');
+
+      // 10. Mark room subscription as read (New in 0.2.0!)
+      print('\n📖 Marking subscription as read for room: ${activeRoom.id}...');
+      final isRead = await client.subscriptions.read(roomId: activeRoom.id);
+      if (isRead) {
+        print('✅ Subscription successfully marked as read!');
+      }
     }
 
-    // 7. Join and explore a channel
+    // 11. Join and explore a channel
     if (channels.isNotEmpty) {
       final channelToJoin = channels.first;
       print('\n🤝 Joining channel #${channelToJoin.name}...');
@@ -84,7 +115,7 @@ void main() async {
       }
     }
 
-    // 8. User Management: List all workspace users (requires appropriate permissions)
+    // 12. User Management: List all workspace users (requires appropriate permissions)
     print('\n👥 Fetching all workspace users...');
     final allUsers = await client.users.list(count: 5);
     print('✅ User list loaded:');
@@ -92,7 +123,7 @@ void main() async {
       print('   • @${user.username} (${user.name ?? "No Name"})');
     }
 
-    // 9. Logout securely
+    // 13. Logout securely
     print('\n🔌 Logging out...');
     final loggedOut = await client.auth.logout();
     if (loggedOut) {

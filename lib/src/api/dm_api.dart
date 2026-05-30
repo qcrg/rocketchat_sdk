@@ -74,4 +74,39 @@ class RocketChatDmApi {
       throw Exception('HTTP Error: ${e.message}');
     }
   }
+
+  /// Sends a message to a direct message (DM) room.
+  /// Corresponds to `POST /api/v1/chat.postMessage`
+  Future<RocketChatMessage> sendMessage({
+    required String roomId,
+    required String text,
+  }) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        'api/v1/chat.postMessage',
+        data: {
+          'roomId': roomId,
+          'text': text,
+        },
+      );
+
+      final dataMap = response.data;
+      if (response.statusCode == 200 &&
+          dataMap != null &&
+          dataMap['success'] == true) {
+        final messageJson = dataMap['message'] as Map<String, dynamic>?;
+        if (messageJson != null) {
+          return RocketChatMessage.fromJson(messageJson);
+        } else {
+          throw Exception('Message was not returned in the response');
+        }
+      } else {
+        throw Exception(
+          'Failed to send message: ${dataMap?['error'] ?? 'Unknown error'}',
+        );
+      }
+    } on DioException catch (e) {
+      throw Exception('HTTP Error: ${e.message}');
+    }
+  }
 }
