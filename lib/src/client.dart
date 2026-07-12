@@ -1,9 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:rocketchat_sdk/src/api/auth_api.dart';
 import 'package:rocketchat_sdk/src/api/channels_api.dart';
+import 'package:rocketchat_sdk/src/api/chat_api.dart';
 import 'package:rocketchat_sdk/src/api/dm_api.dart';
 import 'package:rocketchat_sdk/src/api/subscriptions_api.dart';
 import 'package:rocketchat_sdk/src/api/users_api.dart';
+import 'package:rocketchat_sdk/src/api/realtime_api.dart';
+import 'package:rocketchat_sdk/src/api/push_api.dart';
 
 class RocketChatClient {
   final Dio dio;
@@ -23,8 +26,17 @@ class RocketChatClient {
   /// Channel and Room APIs module
   late final RocketChatChannelsApi channels;
 
+  /// Chat APIs module
+  late final RocketChatChatApi chat;
+
   /// Subscription and read-tracking APIs module
   late final RocketChatSubscriptionsApi subscriptions;
+
+  /// Realtime WebSocket API module
+  late final RocketChatRealtimeApi realtime;
+
+  /// Push notification token registration APIs module
+  late final RocketChatPushApi push;
 
   RocketChatClient({
     required this.baseUrl,
@@ -54,13 +66,33 @@ class RocketChatClient {
     dm = RocketChatDmApi(this.dio);
     users = RocketChatUsersApi(this.dio);
     channels = RocketChatChannelsApi(this.dio);
+    chat = RocketChatChatApi(this.dio);
     subscriptions = RocketChatSubscriptionsApi(this.dio);
+    push = RocketChatPushApi(this.dio);
+    realtime = RocketChatRealtimeApi(
+      baseUrl: this.baseUrl,
+      logPrinter: enableLogging 
+          ? (logPrinter ?? (msg) => print('[RocketChatSDK] $msg')) 
+          : null,
+    );
+    
+    // Auto-connect if token exists
+    if (this.authToken.isNotEmpty) {
+      realtime.connect().then((_) {
+        realtime.login(this.authToken);
+      }).catchError((_) {});
+    }
   }
 
   void _onLoginSuccess(String token, String uid) {
     authToken = token;
     userId = uid;
     _updateHeaders(token, uid);
+    
+    // Auto-connect and login to Realtime API
+    realtime.connect().then((_) {
+      realtime.login(token);
+    }).catchError((_) {});
   }
 
   void _updateHeaders(String token, String uid) {

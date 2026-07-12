@@ -180,4 +180,31 @@ class RocketChatUsersApi {
       throw Exception('HTTP Error: ${e.message}');
     }
   }
+
+  /// Gets a user's presence status.
+  /// Corresponds to `GET /api/v1/users.getPresence`
+  Future<String> getPresence({String? userId, String? username}) async {
+    try {
+      final response = await _dio.get<Map<String, dynamic>>(
+        'api/v1/users.getPresence',
+        queryParameters: {
+          if (userId != null) 'userId': userId,
+          if (username != null) 'username': username,
+        },
+      );
+
+      final dataMap = response.data;
+      if (response.statusCode == 200 &&
+          dataMap != null &&
+          dataMap['success'] == true) {
+        return dataMap['status'] as String? ?? 'offline';
+      } else {
+        throw Exception(
+          'Failed to get presence: ${dataMap?['error'] ?? 'Unknown error'}',
+        );
+      }
+    } on DioException catch (e) {
+      throw Exception('HTTP Error: ${e.message}');
+    }
+  }
 }

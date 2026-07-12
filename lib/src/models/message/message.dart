@@ -13,6 +13,7 @@ abstract class RocketChatMessage with _$RocketChatMessage {
     required String msg,
     required String ts,
     @JsonKey(name: 'u') required RocketChatUser sender,
+    Map<String, dynamic>? reactions,
   }) = _RocketChatMessage;
 
   factory RocketChatMessage.fromJson(Map<String, dynamic> json) =>
