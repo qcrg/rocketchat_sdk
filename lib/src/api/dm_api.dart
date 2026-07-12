@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:rocketchat_sdk/src/models/create_dm_room/create_dm_room.dart';
 import 'package:rocketchat_sdk/src/models/dm_room/dm_room.dart';
 import 'package:rocketchat_sdk/src/models/message/message.dart';
 
@@ -30,6 +31,40 @@ class RocketChatDmApi {
       } else {
         throw Exception(
           'Failed to load DM list: ${dataMap?['error'] ?? 'Unknown error'}',
+        );
+      }
+    } on DioException catch (e) {
+      throw Exception('HTTP Error: ${e.message}');
+    }
+  }
+
+  /// Create or get a direct message session with another user or more than one user.
+  /// Corresponds to `POST /api/v1/dm.create`
+  Future<CreateDmRoom> create({
+    String? username,
+    List<String>? usernames,
+    bool? excludeSelf,
+  }) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        'api/v1/dm.create',
+        data: {
+          'username': ?username,
+          'usernames': ?usernames,
+          'excludeSelf': ?excludeSelf,
+        },
+      );
+
+      final dataMap = response.data;
+      if (response.statusCode == 200 &&
+          dataMap != null &&
+          dataMap['success'] == true) {
+        return CreateDmRoom.fromJson(
+          dataMap['room'] as Map<String, dynamic>,
+        );
+      } else {
+        throw Exception(
+          'Failed to load messages: ${dataMap?['error'] ?? 'Unknown error'}',
         );
       }
     } on DioException catch (e) {
