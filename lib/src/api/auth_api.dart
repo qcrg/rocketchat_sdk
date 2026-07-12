@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
+import 'package:rocketchat_sdk/src/exceptions/auth_exception.dart';
+import 'package:rocketchat_sdk/src/exceptions/rcs_exception.dart';
 import 'package:rocketchat_sdk/src/models/rocketchat_login_data/rocketchat_login_data.dart';
 import 'package:rocketchat_sdk/src/models/user/user.dart';
 
@@ -17,10 +21,7 @@ class RocketChatAuthApi {
     try {
       final response = await _dio.post<Map<String, dynamic>>(
         'api/v1/login',
-        data: {
-          'user': username,
-          'password': password,
-        },
+        data: {'user': username, 'password': password},
       );
 
       final dataMap = response.data;
@@ -43,7 +44,16 @@ class RocketChatAuthApi {
         );
       }
     } on DioException catch (e) {
-      throw Exception('HTTP Error: ${e.message}');
+      switch (e.type) {
+        case DioExceptionType.badResponse:
+          final statusCode = e.response!.statusCode;
+          if (statusCode == HttpStatus.unauthorized) {
+            throw AuthException.invalidCredentials();
+          }
+
+        default:
+      }
+      throw RCSException('HTTP Error: type=${e.type} ${e.message}');
     }
   }
 
