@@ -1,8 +1,9 @@
 export 'src/api/auth_api.dart';
 export 'src/api/channels_api.dart';
 export 'src/api/chat_api.dart';
-export 'src/api/commands_api.dart';
 export 'src/api/dm_api.dart';
+export 'src/api/misc/commands_api.dart';
+export 'src/api/misc/misc_api.dart';
 export 'src/api/push_api.dart';
 export 'src/api/realtime_api.dart';
 export 'src/api/subscriptions_api.dart';

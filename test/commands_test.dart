@@ -42,7 +42,7 @@ void main() {
         dio: dio,
       );
 
-      await client.commands.run(
+      await client.misc.commands.run(
         command: 'test_user_123',
         roomId: 'test_room_123',
       );

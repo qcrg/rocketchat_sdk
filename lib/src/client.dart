@@ -2,8 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:rocketchat_sdk/src/api/auth_api.dart';
 import 'package:rocketchat_sdk/src/api/channels_api.dart';
 import 'package:rocketchat_sdk/src/api/chat_api.dart';
-import 'package:rocketchat_sdk/src/api/commands_api.dart';
 import 'package:rocketchat_sdk/src/api/dm_api.dart';
+import 'package:rocketchat_sdk/src/api/misc/misc_api.dart';
 import 'package:rocketchat_sdk/src/api/subscriptions_api.dart';
 import 'package:rocketchat_sdk/src/api/users_api.dart';
 import 'package:rocketchat_sdk/src/api/realtime_api.dart';
@@ -39,8 +39,8 @@ class RocketChatClient {
   /// Push notification token registration APIs module
   late final RocketChatPushApi push;
 
-  /// Commands APIs module
-  late final RocketChatCommandsApi commands;
+  /// Miscellaneous APIs module
+  late final RocketChatMiscApi misc;
 
   RocketChatClient({
     required this.baseUrl,
@@ -81,7 +81,7 @@ class RocketChatClient {
           ? (logPrinter ?? (msg) => print('[RocketChatSDK] $msg'))
           : null,
     );
-    commands = RocketChatCommandsApi(this.dio);
+    misc = RocketChatMiscApi(this.dio);
 
     // Auto-connect if token exists
     if (this.authToken.isNotEmpty) {
