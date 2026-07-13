@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
-import 'package:rocketchat_sdk/src/exceptions/auth_exception.dart';
-import 'package:rocketchat_sdk/src/exceptions/rcs_exception.dart';
+import 'package:rocketchat_sdk/src/exceptions/general.dart';
 import 'package:rocketchat_sdk/src/models/rocketchat_login_data/rocketchat_login_data.dart';
 import 'package:rocketchat_sdk/src/models/user/user.dart';
 
@@ -46,14 +43,11 @@ class RocketChatAuthApi {
     } on DioException catch (e) {
       switch (e.type) {
         case DioExceptionType.badResponse:
-          final statusCode = e.response!.statusCode;
-          if (statusCode == HttpStatus.unauthorized) {
-            throw AuthException.invalidCredentials();
-          }
+          throw RocketChatException.fromStatusCode(e.response!.statusCode!);
 
         default:
       }
-      throw RCSException('HTTP Error: type=${e.type} ${e.message}');
+      throw Exception('HTTP Error: type=${e.type} ${e.message}');
     }
   }
 

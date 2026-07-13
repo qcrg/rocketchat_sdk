@@ -9,6 +9,7 @@ export 'src/api/realtime_api.dart';
 export 'src/api/subscriptions_api.dart';
 export 'src/api/users_api.dart';
 export 'src/client.dart';
+export 'src/exceptions/general.dart';
 export 'src/models/channel_room/channel_room.dart';
 export 'src/models/dm_room/dm_room.dart';
 export 'src/models/message/message.dart';

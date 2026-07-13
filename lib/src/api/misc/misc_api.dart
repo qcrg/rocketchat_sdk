@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:rocketchat_sdk/src/api/misc/commands_api.dart';
+import 'package:rocketchat_sdk/src/exceptions/general.dart';
 import 'package:rocketchat_sdk/src/models/misc_info/misc_info.dart';
 
 class RocketChatMiscApi {
@@ -30,6 +31,9 @@ class RocketChatMiscApi {
         'Failed to retrive information about server',
       );
     } on DioException catch (e) {
+      if (e.type == DioExceptionType.badResponse) {
+        throw RocketChatException.fromStatusCode(e.response!.statusCode!);
+      }
       throw Exception('HTTP Error: ${e.message}');
     }
   }
