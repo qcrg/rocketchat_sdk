@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:rocketchat_sdk/src/api/auth_api.dart';
 import 'package:rocketchat_sdk/src/api/channels_api.dart';
 import 'package:rocketchat_sdk/src/api/chat_api.dart';
+import 'package:rocketchat_sdk/src/api/commands_api.dart';
 import 'package:rocketchat_sdk/src/api/dm_api.dart';
 import 'package:rocketchat_sdk/src/api/subscriptions_api.dart';
 import 'package:rocketchat_sdk/src/api/users_api.dart';
@@ -38,6 +39,9 @@ class RocketChatClient {
   /// Push notification token registration APIs module
   late final RocketChatPushApi push;
 
+  /// Commands APIs module
+  late final RocketChatCommandsApi commands;
+
   RocketChatClient({
     required this.baseUrl,
     String? authToken,
@@ -55,10 +59,12 @@ class RocketChatClient {
       // Print statements inside logging block are explicitly allowed for SDK level stdout outputs.
       // ignore: avoid_print
       final printer = logPrinter ?? (msg) => print('[RocketChatSDK] $msg');
-      this.dio.interceptors.add(LogInterceptor(
-        responseHeader: false,
-        logPrint: (obj) => printer(obj.toString()),
-      ));
+      this.dio.interceptors.add(
+        LogInterceptor(
+          responseHeader: false,
+          logPrint: (obj) => printer(obj.toString()),
+        ),
+      );
     }
 
     // Initialize the module APIs
@@ -71,16 +77,20 @@ class RocketChatClient {
     push = RocketChatPushApi(this.dio);
     realtime = RocketChatRealtimeApi(
       baseUrl: this.baseUrl,
-      logPrinter: enableLogging 
-          ? (logPrinter ?? (msg) => print('[RocketChatSDK] $msg')) 
+      logPrinter: enableLogging
+          ? (logPrinter ?? (msg) => print('[RocketChatSDK] $msg'))
           : null,
     );
-    
+    commands = RocketChatCommandsApi(this.dio);
+
     // Auto-connect if token exists
     if (this.authToken.isNotEmpty) {
-      realtime.connect().then((_) {
-        realtime.login(this.authToken);
-      }).catchError((_) {});
+      realtime
+          .connect()
+          .then((_) {
+            realtime.login(this.authToken);
+          })
+          .catchError((_) {});
     }
   }
 
@@ -88,11 +98,14 @@ class RocketChatClient {
     authToken = token;
     userId = uid;
     _updateHeaders(token, uid);
-    
+
     // Auto-connect and login to Realtime API
-    realtime.connect().then((_) {
-      realtime.login(token);
-    }).catchError((_) {});
+    realtime
+        .connect()
+        .then((_) {
+          realtime.login(token);
+        })
+        .catchError((_) {});
   }
 
   void _updateHeaders(String token, String uid) {
