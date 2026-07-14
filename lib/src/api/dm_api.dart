@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:rocketchat_sdk/rocketchat_sdk.dart';
 import 'package:rocketchat_sdk/src/models/create_dm_room/create_dm_room.dart';
 import 'package:rocketchat_sdk/src/models/dm_room/dm_room.dart';
 import 'package:rocketchat_sdk/src/models/message/message.dart';
@@ -68,6 +69,12 @@ class RocketChatDmApi {
         );
       }
     } on DioException catch (e) {
+      switch (e.type) {
+        case DioExceptionType.badResponse:
+          throw RocketChatException.fromStatusCode(e.response!.statusCode!);
+
+        default:
+      }
       throw Exception('HTTP Error: ${e.message}');
     }
   }
