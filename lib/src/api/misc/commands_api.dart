@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:rocketchat_sdk/rocketchat_sdk.dart';
 
 class RocketChatCommandsApi {
   final Dio _dio;
@@ -36,7 +37,13 @@ class RocketChatCommandsApi {
         );
       }
     } on DioException catch (e) {
-      throw Exception('HTTP Error: ${e.message}');
+      switch (e.type) {
+        case DioExceptionType.badResponse:
+          throw RocketChatException.fromStatusCode(e.response!.statusCode!);
+
+        default:
+      }
+      throw Exception('HTTP Error: type=${e.type} ${e.message}');
     }
   }
 }
